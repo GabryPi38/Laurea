@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La laurea</title>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;800&family=Figtree:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--ink:#12152e;--ink2:#262b5c;--gold:#ffb81c;--gold-soft:#fff1cc;--violet:#5b4bff;--bg:#f3f4fb;--mute:#6a6f8c;--line:#e3e5f3}
+*{box-sizing:border-box;margin:0}
+html{scroll-padding-top:env(safe-area-inset-top)}
+body{font-family:Figtree,system-ui,sans-serif;background:var(--bg);color:var(--ink);line-height:1.45;padding-bottom:calc(92px + env(safe-area-inset-bottom))}
+button,input,textarea,select{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--violet);outline-offset:2px}
+header{background:var(--ink);color:#fff;padding:calc(34px + env(safe-area-inset-top)) 22px 56px;border-radius:0 0 36px 36px;position:relative;overflow:hidden}
+header::after{content:"";position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:50%;background:var(--gold);opacity:.95}
+header>*{position:relative;z-index:1}
+.hat{font-size:2.4rem;display:inline-block;transform:rotate(-8deg)}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:clamp(2.6rem,13vw,4.2rem);line-height:.95;letter-spacing:-.03em;margin:12px 0 14px;max-width:11ch}
+header p{color:#c9cdf5;font-size:1.02rem}
+header b{color:var(--gold)}
+main{max-width:660px;margin:-26px auto 0;padding:0 14px;position:relative}
+.view{display:none}.view.on{display:block}
+.card{background:#fff;border-radius:22px;padding:18px;margin-bottom:14px;box-shadow:0 8px 28px #12152e14}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-size:1.35rem;margin-bottom:4px}
+h3{font-family:'Bricolage Grotesque',sans-serif;font-size:1.12rem;margin-bottom:12px}
+.sub{color:var(--mute);font-size:.92rem;margin-bottom:12px}
+.btn{background:var(--violet);color:#fff;border:0;border-radius:14px;padding:13px 20px;font-weight:700;cursor:pointer;width:100%}
+.btn:disabled{opacity:.55}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 2px 12px;scrollbar-width:none}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:8px 14px;white-space:nowrap;cursor:pointer;font-weight:500}
+.chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.grid{columns:2;column-gap:10px}
+.ph{break-inside:avoid;margin-bottom:10px;position:relative;border-radius:16px;overflow:hidden;cursor:pointer;background:var(--line)}
+.ph img{width:100%;display:block;min-height:90px}
+.ph span{position:absolute;left:8px;bottom:8px;background:#12152ecc;color:#fff;font-size:.78rem;padding:3px 9px;border-radius:99px;max-width:calc(100% - 16px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.empty{text-align:center;color:var(--mute);padding:34px 10px}
+.empty b{display:block;font-size:2rem;margin-bottom:6px}
+#fab{position:fixed;right:16px;bottom:calc(88px + env(safe-area-inset-bottom));z-index:5;background:var(--gold);color:var(--ink);border:0;border-radius:99px;padding:15px 22px;font-weight:700;box-shadow:0 10px 26px #12152e55;cursor:pointer;display:none;gap:8px;align-items:center}
+nav{position:fixed;left:0;right:0;bottom:0;z-index:6;background:#fff;display:flex;justify-content:space-around;padding:8px 6px calc(8px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
+nav button{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.74rem;color:var(--mute);padding:6px 14px;border-radius:14px;cursor:pointer;font-weight:500}
+nav button i{font-style:normal;font-size:1.4rem}
+nav button.on{color:var(--ink);background:var(--gold-soft);font-weight:700}
+.c{border-bottom:1px solid var(--line);padding:12px 0}.c:last-child{border:0}
+.c b{font-size:.92rem}.c small{color:var(--mute);margin-left:6px}.c p{margin-top:2px;white-space:pre-wrap;word-break:break-word}
+textarea,input[type=text],select{width:100%;border:1.5px solid var(--line);border-radius:14px;padding:12px 14px;background:#fff;margin-bottom:10px}
+textarea{resize:vertical;min-height:84px}
+.opt{display:block;width:100%;text-align:left;background:var(--bg);border:1.5px solid transparent;border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer;font-weight:500}
+.opt:not(:disabled):active{border-color:var(--violet)}
+.opt.sel{background:var(--ink);color:#fff}
+.opt:disabled:not(.sel){opacity:.5}
+.rank{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}.rank:last-child{border:0}
+.rank em{font-style:normal;width:34px;text-align:center;font-size:1.4rem}
+.rank div{flex:1;font-weight:700}.rank small{color:var(--mute);font-weight:400;display:block}
+.rank strong{font-family:'Bricolage Grotesque',sans-serif;font-size:1.5rem}
+.rank:first-child strong{color:#d99200}
+.sheet{position:fixed;inset:0;z-index:20;background:#12152e99;display:none;align-items:flex-end;justify-content:center}
+.sheet.on{display:flex}
+.panel{background:#fff;width:100%;max-width:560px;border-radius:28px 28px 0 0;padding:22px 18px calc(22px + env(safe-area-inset-bottom));max-height:92vh;overflow:auto;animation:up .25s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@media(prefers-reduced-motion:reduce){.panel{animation:none}}
+.file{display:block;border:2px dashed var(--violet);border-radius:18px;padding:22px;text-align:center;color:var(--violet);font-weight:700;margin-bottom:12px;cursor:pointer;background:#5b4bff0d}
+.file input{display:none}
+#lb img{max-width:100%;max-height:72vh;border-radius:16px;display:block;margin:0 auto 10px}
+#lb{color:#fff;text-align:center;background:none;padding:14px}
+#toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translate(-50%,-90px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:99px;z-index:50;transition:transform .3s;font-weight:500;max-width:90vw;text-align:center}
+#toast.on{transform:translate(-50%,0)}
+.warn{background:var(--gold-soft);border-radius:16px;padding:12px 14px;margin-bottom:14px;font-size:.92rem}
+</style>
+</head>
+<body>
+
+<header>
+  <span class="hat">🎓</span>
+  <h1 id="titolo"></h1>
+  <p id="sottotitolo"></p>
+</header>
+
+<main>
+  <div id="nocode" class="warn" hidden>Per partecipare apri il link dal QR code della festa.</div>
+
+  <section id="foto" class="view">
+    <div class="chips" id="chips"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="commenti" class="view">
+    <div class="card">
+      <h2>Lascia un pensiero</h2>
+      <p class="sub">Un augurio, un ricordo o una battuta per il laureato.</p>
+      <textarea id="body" maxlength="500" placeholder="Scrivi qui…"></textarea>
+      <button class="btn" onclick="sendComment()">Pubblica</button>
+    </div>
+    <div class="card" id="clist"></div>
+  </section>
+
+  <section id="gioco" class="view">
+    <div class="card">
+      <h2>Fantalaurea</h2>
+      <p class="sub">Scegli una risposta per ogni sfida. Dopo la scelta non si cambia, quindi pensaci bene.</p>
+    </div>
+    <div id="glist"></div>
+  </section>
+
+  <section id="classifica" class="view">
+    <div class="card">
+      <h2>Classifica</h2>
+      <p class="sub">Un punto per ogni risposta azzeccata.</p>
+      <div id="board"></div>
+    </div>
+  </section>
+</main>
+
+<button id="fab" onclick="openSheet('up')">📷 Aggiungi foto</button>
+
+<nav>
+  <button data-t="foto"><i>📸</i>Foto</button>
+  <button data-t="commenti"><i>💬</i>Pensieri</button>
+  <button data-t="gioco"><i>🎯</i>Fantalaurea</button>
+  <button data-t="classifica"><i>🏆</i>Classifica</button>
+</nav>
+
+<!-- Carica foto -->
+<div class="sheet" id="up" onclick="if(event.target===this)closeSheets()">
+  <div class="panel">
+    <h2>Aggiungi foto</h2>
+    <p class="sub">Puoi sceglierne più di una. Vengono ridimensionate in automatico.</p>
+    <label class="file"><span id="filelbl">Scegli o scatta le foto</span>
+      <input type="file" id="file" accept="image/*" multiple onchange="$('#filelbl').textContent=this.files.length?this.files.length+' foto selezionate':'Scegli o scatta le foto'">
+    </label>
+    <select id="mission"></select>
+    <input type="text" id="caption" maxlength="200" placeholder="Didascalia (facoltativa)">
+    <button class="btn" id="send" onclick="upload()">Carica</button>
+  </div>
+</div>
+
+<!-- Nome ospite -->
+<div class="sheet" id="who">
+  <div class="panel">
+    <h2>Benvenuto alla festa</h2>
+    <p class="sub">Come ti chiami? Il nome comparirà accanto alle tue foto e ai tuoi pensieri.</p>
+    <input type="text" id="name" maxlength="40" placeholder="Nome e cognome">
+    <button class="btn gold" onclick="saveName()">Entra</button>
+  </div>
+</div>
+
+<!-- Foto a schermo intero -->
+<div class="sheet" id="lb" onclick="closeSheets()"><div></div></div>
+
+<div id="toast"></div>
+
+<script>
+/* ============ IMPOSTAZIONI: modifica solo questa parte ============ */
+const CFG = {
+  url: 'https://qqynmrzomzppuckzbepi.supabase.co/rest/v1/',
+  key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFxeW5tcnpvbXpwcHVja3piZXBpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTExODgwNzUsImV4cCI6MjEwNjc2NDA3NX0.Sx_ORtV9i2qf0VzbSb39H2FVONzMrvRVLNf1HYj_BsM',
+  titolo: 'Laurea di Laura',
+  sottotitolo: 'Giovedì <b>15 ottobre</b>: scatta, scrivi e gioca con noi.',
+  missioni: [            // le "foto preimpostate": gli ospiti le scelgono quando caricano
+    'Foto con la laureata', 'Brindisi', 'Selfie di gruppo',
+    'Il momento più buffo', 'Le lacrime di gioia', 'Torta e dolci'
+  ]
+};
+/* ================================================================== */
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const qs = new URLSearchParams(location.search);
+if (qs.get('code')) localStorage.setItem('code', qs.get('code'));
+const code = localStorage.getItem('code') || '';
+let guest = localStorage.getItem('guest') || '';
+const sb = supabase.createClient(CFG.url, CFG.key, { global: { headers: { 'x-event-code': code } } });
+
+document.title = CFG.titolo;
+$('#titolo').textContent = CFG.titolo;
+$('#sottotitolo').innerHTML = CFG.sottotitolo;
+$('#nocode').hidden = !!code;
+$('#mission').innerHTML = '<option value="">Nessuna missione</option>' + CFG.missioni.map(m => `<option>${esc(m)}</option>`).join('');
+
+let tt;
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('on'), 2800); }
+const openSheet = id => $('#' + id).classList.add('on');
+const closeSheets = () => document.querySelectorAll('.sheet').forEach(s => s.id !== 'who' && s.classList.remove('on'));
+const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 6e4); return m < 1 ? 'ora' : m < 60 ? m + ' min fa' : m < 1440 ? Math.round(m / 60) + ' h fa' : new Date(d).toLocaleDateString('it-IT'); };
+
+/* ---- Navigazione ---- */
+const loaders = { foto: loadPhotos, commenti: loadComments, gioco: loadGame, classifica: loadBoard };
+function go(t) {
+  document.querySelectorAll('.view').forEach(v => v.classList.toggle('on', v.id === t));
+  document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === t));
+  $('#fab').style.display = t === 'foto' ? 'flex' : 'none';
+  loaders[t](); scrollTo(0, 0);
+}
+document.querySelectorAll('nav button').forEach(b => b.onclick = () => go(b.dataset.t));
+
+/* ---- Foto ---- */
+let photos = [], filter = '';
+const pub = p => sb.storage.from('photos').getPublicUrl(p).data.publicUrl;
+async function loadPhotos() {
+  const { data, error } = await sb.from('photos').select('*').order('created_at', { ascending: false }).limit(300);
+  if (error) return toast('Non riesco a caricare le foto. Riprova tra poco.');
+  photos = data; renderPhotos();
+}
+function renderPhotos() {
+  $('#chips').innerHTML = ['Tutte', ...CFG.missioni].map(m => `<button class="chip ${(m === 'Tutte' ? '' : m) === filter ? 'on' : ''}" onclick="filter='${m === 'Tutte' ? '' : m.replace(/'/g, "\\'")}';renderPhotos()">${esc(m)}</button>`).join('');
+  const list = photos.filter(p => !filter || p.mission === filter);
+  $('#grid').innerHTML = list.length ? list.map(p => `<div class="ph" onclick="show('${p.id}')"><img loading="lazy" src="${pub(p.thumb)}" alt="${esc(p.caption || 'Foto di ' + p.guest)}"><span>${esc(p.guest)}</span></div>`).join('')
+    : '';
+  if (!list.length) $('#grid').innerHTML = '<div class="empty" style="column-span:all"><b>📷</b>Ancora nessuna foto qui. Scatta la prima!</div>';
+}
+function show(id) {
+  const p = photos.find(x => x.id === id);
+  $('#lb').innerHTML = `<div><img src="${pub(p.path)}" alt=""><b>${esc(p.guest)}</b>${p.mission ? ' · ' + esc(p.mission) : ''}${p.caption ? '<p>' + esc(p.caption) + '</p>' : ''}<p style="opacity:.6;margin-top:8px">Tocca per chiudere</p></div>`;
+  openSheet('lb');
+}
+function compress(file, max, q) {
+  return new Promise((res, rej) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, max / Math.max(img.width, img.height)), c = document.createElement('canvas');
+      c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+      c.toBlob(b => b ? res(b) : rej(new Error('compressione')), 'image/jpeg', q);
+    };
+    img.onerror = () => rej(new Error('immagine non leggibile'));
+    img.src = URL.createObjectURL(file);
+  });
+}
+async function upload() {
+  const files = [...$('#file').files];
+  if (!files.length) return toast('Scegli almeno una foto');
+  const btn = $('#send'); btn.disabled = true; let n = 0, ok = 0;
+  for (const f of files) {
+    btn.textContent = `Carico ${++n} di ${files.length}…`;
+    try {
+      const id = crypto.randomUUID();
+      const [big, th] = await Promise.all([compress(f, 1600, .8), compress(f, 400, .7)]);
+      let r = await sb.storage.from('photos').upload(`${id}.jpg`, big, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
+      r = await sb.storage.from('photos').upload(`${id}_t.jpg`, th, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
+      r = await sb.from('photos').insert({ guest, caption: $('#caption').value.trim() || null, mission: $('#mission').value || null, path: `${id}.jpg`, thumb: `${id}_t.jpg` });
+      if (r.error) throw r.error; ok++;
+    } catch (e) { console.error(e); }
+  }
+  btn.disabled = false; btn.textContent = 'Carica';
+  $('#file').value = ''; $('#caption').value = ''; $('#filelbl').textContent = 'Scegli o scatta le foto';
+  if (ok) { closeSheets(); loadPhotos(); }
+  toast(ok === files.length ? 'Foto caricate 🎉' : ok ? `Caricate ${ok} su ${files.length}. Riprova con le altre.` : 'Caricamento non riuscito. Controlla di aver aperto il link dal QR code.');
+}
+
+/* ---- Pensieri ---- */
+async function loadComments() {
+  const { data, error } = await sb.from('comments').select('*').order('created_at', { ascending: false }).limit(200);
+  if (error) return toast('Non riesco a caricare i pensieri.');
+  $('#clist').innerHTML = data.length ? data.map(c => `<div class="c"><b>${esc(c.guest)}</b><small>${ago(c.created_at)}</small><p>${esc(c.body)}</p></div>`).join('')
+    : '<div class="empty"><b>💬</b>Nessun pensiero ancora. Scrivi il primo!</div>';
+}
+async function sendComment() {
+  const body = $('#body').value.trim();
+  if (!body) return toast('Scrivi qualcosa prima di pubblicare');
+  const { error } = await sb.from('comments').insert({ guest, body });
+  if (error) return toast('Non sono riuscito a pubblicare. Controlla di aver aperto il link dal QR code.');
+  $('#body').value = ''; toast('Pubblicato ✨'); loadComments();
+}
+
+/* ---- Fantalaurea ---- */
+async function loadGame() {
+  const [a, b] = await Promise.all([
+    sb.from('challenges').select('id,question,options').order('position'),
+    sb.from('bets').select('challenge_id,choice').eq('guest', guest)
+  ]);
+  if (a.error) return toast('Non riesco a caricare le sfide.');
+  const mine = Object.fromEntries((b.data || []).map(x => [x.challenge_id, x.choice]));
+  $('#glist').innerHTML = a.data.map(c => `<div class="card"><h3>${esc(c.question)}</h3>${c.options.map((o, k) =>
+    `<button class="opt ${mine[c.id] === k ? 'sel' : ''}" ${c.id in mine ? 'disabled' : ''} onclick="bet(${c.id},${k})">${esc(o)}</button>`).join('')}</div>`).join('');
+}
+async function bet(cid, choice) {
+  const { error } = await sb.from('bets').insert({ guest, challenge_id: cid, choice });
+  toast(error ? 'Giocata non registrata: le sfide potrebbero essere chiuse.' : 'Giocata registrata ✨');
+  loadGame();
+}
+
+/* ---- Classifica ---- */
+async function loadBoard() {
+  const { data, error } = await sb.from('leaderboard').select('*').order('punti', { ascending: false }).limit(50);
+  if (error) return toast('Non riesco a caricare la classifica.');
+  const medal = ['🥇', '🥈', '🥉'];
+  $('#board').innerHTML = data.length ? data.map((r, i) => `<div class="rank"><em>${medal[i] || i + 1}</em><div>${esc(r.guest)}<small>${r.giocate} giocate</small></div><strong>${r.punti}</strong></div>`).join('')
+    : '<div class="empty"><b>⏳</b>La classifica comparirà quando verranno svelate le risposte giuste.</div>';
+}
+
+/* ---- Nome ospite ---- */
+function saveName() {
+  const n = $('#name').value.trim();
+  if (n.length < 2) return toast('Scrivi il tuo nome');
+  guest = n; localStorage.setItem('guest', n);
+  $('#who').classList.remove('on'); go('foto');
+}
+
+if (guest) go('foto'); else { openSheet('who'); go('foto'); }
+</script>
+</body>
+</html>
