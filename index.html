@@ -237,7 +237,7 @@ function renderPhotos() {
     }).join('') + '</div>';
   } else {
     const f = CFG.cartelle[cur], ps = photos.filter(p => fname(p) === f.n);
-    box.innerHTML = `<button class="btn back" onclick="openFolder(null)">← Cartelle</button><h2 class="ft">${f.e} ${esc(f.n)}</h2>` +
+    box.innerHTML = `<button class="btn back" style="margin-right:8px" onclick="go('home')">← Home</button><button class="btn back" onclick="openFolder(null)">← Cartelle</button><h2 class="ft">${f.e} ${esc(f.n)}</h2>` +
       (ps.length ? '<div class="grid">' + ps.map(p => `<div class="ph${isVid(p) ? ' vid' : ''}" onclick="show('${p.id}')"><img loading="lazy" src="${pub(p.thumb)}" alt="${esc(p.caption || (isVid(p) ? 'Video di ' : 'Foto di ') + p.guest)}"><span>${esc(p.guest)}</span></div>`).join('') + '</div>'
         : '<div class="empty"><b>🦗</b>Cartella vuota. Rompi il ghiaccio!</div>');
   }
