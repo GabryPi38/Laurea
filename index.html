@@ -14,8 +14,8 @@ button,input,textarea,select{font:inherit;color:inherit}
 :focus-visible{outline:3px solid var(--p);outline-offset:2px}
 h1,h2,h3,.btn,.pts,.cnt{font-family:Bangers,Impact,sans-serif;font-weight:400;letter-spacing:.03em}
 header{background:var(--b);border-bottom:4px solid var(--k);padding:calc(34px + env(safe-area-inset-top)) 18px 26px;text-align:center}
-h1{color:#fff;text-transform:uppercase;font-size:clamp(3.2rem,17vw,5rem);line-height:1;transform:rotate(-2deg);margin:0 auto 14px;max-width:11ch;text-shadow:-3px -3px 0 var(--k),3px -3px 0 var(--k),-3px 3px 0 var(--k),3px 3px 0 var(--k),0 6px 0 var(--k)}
-header p{font-family:Bangers,Impact,sans-serif;letter-spacing:.05em;font-size:clamp(1.25rem,6.2vw,1.7rem);white-space:nowrap;color:var(--k)}
+h1{font-family:Chewy,Bangers,Impact,sans-serif;color:#fff;text-transform:uppercase;font-size:clamp(3.2rem,17vw,5rem);line-height:1;transform:rotate(-2deg);margin:0 auto 16px;max-width:9ch;letter-spacing:.02em;text-shadow:-3px -3px 0 var(--k),3px -3px 0 var(--k),-3px 3px 0 var(--k),3px 3px 0 var(--k),0 6px 0 var(--k)}
+header p{display:inline-block;font-family:Nunito,system-ui,sans-serif;font-weight:800;font-size:1.2rem;color:#fff;transform:rotate(1.5deg);text-shadow:-2px -2px 0 var(--k),2px -2px 0 var(--k),-2px 2px 0 var(--k),2px 2px 0 var(--k)}
 main{max-width:660px;margin:18px auto 0;padding:0 14px}
 .view{display:none}.view.on{display:block}
 .view:not(.on){display:none!important}
@@ -46,6 +46,7 @@ h2{font-size:1.7rem;margin-bottom:2px}h3{font-size:1.4rem;margin-bottom:4px}
 .ph{break-inside:avoid;margin-bottom:12px;position:relative;border:3px solid var(--k);border-radius:12px;box-shadow:3px 3px 0 var(--k);overflow:hidden;cursor:pointer;background:var(--y)}
 .ph img{width:100%;display:block;min-height:90px}
 .ph span{position:absolute;left:6px;bottom:6px;background:var(--g);border:2px solid var(--k);font-size:.75rem;font-weight:800;padding:1px 8px;border-radius:99px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ph.vid::after{content:"▶";position:absolute;right:6px;top:6px;width:30px;height:30px;border-radius:50%;background:var(--k);color:#fff;display:grid;place-items:center;font-size:.8rem;padding-left:2px}
 .empty{text-align:center;color:var(--mute);padding:30px 10px;font-weight:800}
 .empty b{display:block;font-size:2.6rem}
 #fab{position:fixed;right:14px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:5;width:auto;display:none;background:var(--g)}
@@ -82,7 +83,7 @@ textarea{resize:vertical;min-height:84px}
 .file{display:block;border:3px dashed var(--k);border-radius:16px;padding:20px;text-align:center;font-weight:800;margin-bottom:10px;cursor:pointer;background:var(--g)}
 .file input{display:none}
 #lb{background:#000d;color:#fff;text-align:center;padding:14px;z-index:30}
-#lb img{max-width:100%;max-height:72vh;border:4px solid #fff;border-radius:12px;display:block;margin:0 auto 10px}
+#lb img,#lb video{max-width:100%;max-height:72vh;border:4px solid #fff;border-radius:12px;display:block;margin:0 auto 10px;background:#000}
 #toast{position:fixed;left:50%;top:calc(14px + env(safe-area-inset-top));transform:translate(-50%,-110px);background:var(--g);border:3px solid var(--k);box-shadow:4px 4px 0 var(--k);padding:10px 18px;border-radius:14px;z-index:50;transition:transform .25s;font-weight:800;max-width:90vw;text-align:center}
 #toast.on{transform:translate(-50%,0)}
 .warn{background:var(--p);border:3px solid var(--k);border-radius:14px;padding:10px 14px;margin-bottom:16px;font-weight:800}
@@ -142,12 +143,11 @@ textarea{resize:vertical;min-height:84px}
 
 <div class="sheet" id="up" onclick="if(event.target===this)closeSheets()">
   <div class="panel">
-    <h2>Aggiungi foto 📷</h2>
-    <p class="sub">Scegli la cartella dove finiranno. Le foto si rimpiccioliscono da sole.</p>
-    <label class="file"><span id="filelbl">Scegli o scatta le foto</span>
-      <input type="file" id="file" accept="image/*" multiple onchange="$('#filelbl').textContent=this.files.length?this.files.length+' foto pronte 😎':'Scegli o scatta le foto'">
+    <h2>Aggiungi foto e video 📷</h2>
+    <p class="sub">Le foto si rimpiccioliscono da sole. I video possono pesare al massimo 50 MB.</p>
+    <label class="file"><span id="filelbl">Scegli o scatta foto e video</span>
+      <input type="file" id="file" accept="image/*,video/*" multiple onchange="$('#filelbl').textContent=this.files.length?this.files.length+' file pronti 😎':'Scegli o scatta foto e video'">
     </label>
-    <select id="folder" aria-label="Cartella"></select>
     <input type="text" id="caption" maxlength="200" placeholder="Didascalia (facoltativa)">
     <button class="btn" id="send" onclick="upload()">Carica!</button>
   </div>
@@ -166,7 +166,7 @@ textarea{resize:vertical;min-height:84px}
   </div>
 </div>
 
-<div class="sheet" id="lb" onclick="this.classList.remove('on')"><div></div></div>
+<div class="sheet" id="lb" onclick="closeLb()"><div></div></div>
 <div id="toast"></div>
 
 <script>
@@ -178,6 +178,7 @@ const CFG = {
   cartelle: [
     { n: 'Foto compromettenti', e: '🤡' },
   ],
+  maxVideoMB: 50,
   // Sticker/meme sparsi nelle schermate: PNG trasparenti nella cartella "memes" accanto a index.html.
   // Quelli che non trovi vengono nascosti da soli, quindi puoi metterne quanti vuoi (max 6 con questi nomi).
   memes: ['memes/1.png', 'memes/2.png', 'memes/3.png', 'memes/4.png', 'memes/5.png', 'memes/6.png']
@@ -195,7 +196,6 @@ document.title = CFG.titolo;
 $('#titolo').textContent = CFG.titolo;
 $('#sottotitolo').textContent = CFG.sottotitolo;
 $('#nocode').hidden = !!code;
-$('#folder').innerHTML = '<option value="">📁 Scegli la cartella…</option>' + CFG.cartelle.map((f, i) => `<option value="${i}">${f.e} ${esc(f.n)}</option>`).join('');
 document.querySelectorAll('[data-stk]').forEach((el, i) => {
   if (!CFG.memes.length) return el.remove();
   el.innerHTML = `<img src="${esc(CFG.memes[i % CFG.memes.length])}" alt="" style="--r:${[-6, 5, -4, 7, -3][i % 5]}deg" onerror="this.parentNode.remove()">`;
@@ -204,9 +204,12 @@ document.querySelectorAll('[data-stk]').forEach((el, i) => {
 let tt;
 function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('on'), 3000); }
 const openSheet = id => $('#' + id).classList.add('on');
-const closeSheets = () => document.querySelectorAll('.sheet').forEach(s => s.id !== 'who' && s.classList.remove('on'));
+const closeSheets = () => { document.querySelectorAll('.sheet').forEach(s => s.id !== 'who' && s.classList.remove('on')); $('#lb').innerHTML = '<div></div>'; };
+const closeLb = () => { $('#lb').classList.remove('on'); $('#lb').innerHTML = '<div></div>'; };
 const ago = d => { const m = Math.round((Date.now() - new Date(d)) / 6e4); return m < 1 ? 'ora' : m < 60 ? m + ' min fa' : m < 1440 ? Math.round(m / 60) + ' h fa' : new Date(d).toLocaleDateString('it-IT'); };
 const pub = p => sb.storage.from('photos').getPublicUrl(p).data.publicUrl;
+const VID = /\.(mp4|mov|m4v|webm|3gp)$/i;
+const isVid = p => VID.test(p.path);
 
 /* ---- Navigazione ---- */
 const loaders = { home: loadBoard, foto: loadPhotos, commenti: loadComments, gioco: loadGame };
@@ -217,7 +220,7 @@ function go(t) {
   loaders[t](); scrollTo(0, 0);
 }
 
-/* ---- Foto a cartelle ---- */
+/* ---- Foto e video a cartelle ---- */
 let photos = [], cur = null;
 const fname = p => p.mission || 'Altro';
 async function loadPhotos() {
@@ -235,14 +238,15 @@ function renderPhotos() {
   } else {
     const f = CFG.cartelle[cur], ps = photos.filter(p => fname(p) === f.n);
     box.innerHTML = `<button class="btn back" onclick="openFolder(null)">← Cartelle</button><h2 class="ft">${f.e} ${esc(f.n)}</h2>` +
-      (ps.length ? '<div class="grid">' + ps.map(p => `<div class="ph" onclick="show('${p.id}')"><img loading="lazy" src="${pub(p.thumb)}" alt="${esc(p.caption || 'Foto di ' + p.guest)}"><span>${esc(p.guest)}</span></div>`).join('') + '</div>'
+      (ps.length ? '<div class="grid">' + ps.map(p => `<div class="ph${isVid(p) ? ' vid' : ''}" onclick="show('${p.id}')"><img loading="lazy" src="${pub(p.thumb)}" alt="${esc(p.caption || (isVid(p) ? 'Video di ' : 'Foto di ') + p.guest)}"><span>${esc(p.guest)}</span></div>`).join('') + '</div>'
         : '<div class="empty"><b>🦗</b>Cartella vuota. Rompi il ghiaccio!</div>');
   }
 }
 function openFolder(i) { cur = i; renderPhotos(); scrollTo(0, 0); }
 function show(id) {
-  const p = photos.find(x => x.id === id);
-  $('#lb').innerHTML = `<div><img src="${pub(p.path)}" alt=""><b>${esc(p.guest)}</b>${p.caption ? '<p>' + esc(p.caption) + '</p>' : ''}<p style="opacity:.7;margin-top:8px">Tocca per chiudere</p></div>`;
+  const p = photos.find(x => x.id === id), v = isVid(p);
+  const media = v ? `<video src="${pub(p.path)}" controls autoplay playsinline onclick="event.stopPropagation()"></video>` : `<img src="${pub(p.path)}" alt="">`;
+  $('#lb').innerHTML = `<div>${media}<b>${esc(p.guest)}</b>${p.caption ? '<p>' + esc(p.caption) + '</p>' : ''}<p style="opacity:.7;margin-top:8px">${v ? 'Tocca fuori dal video per chiudere' : 'Tocca per chiudere'}</p></div>`;
   openSheet('lb');
 }
 function showProof(path) {
@@ -262,27 +266,66 @@ function compress(file, max, q) {
     img.src = URL.createObjectURL(file);
   });
 }
-function openUp() { $('#folder').value = cur !== null ? cur : (CFG.cartelle.length === 1 ? 0 : ''); openSheet('up'); }
+// Miniatura di un video: un fotogramma; se il telefono non riesce a leggerlo, una copertina viola con 🎬
+function videoThumb(file) {
+  return new Promise(res => {
+    const url = URL.createObjectURL(file), v = document.createElement('video');
+    let done = false, timer;
+    const out = blob => { if (done) return; done = true; clearTimeout(timer); URL.revokeObjectURL(url); res(blob); };
+    const fallback = () => {
+      const c = document.createElement('canvas'); c.width = 400; c.height = 300;
+      const x = c.getContext('2d'); x.fillStyle = '#a66fff'; x.fillRect(0, 0, 400, 300);
+      x.font = '120px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('🎬', 200, 150);
+      c.toBlob(out, 'image/jpeg', .7);
+    };
+    timer = setTimeout(fallback, 6000);
+    v.muted = true; v.playsInline = true; v.preload = 'auto';
+    v.onloadeddata = () => { v.currentTime = Math.min(.5, (v.duration || 1) / 2); };
+    v.onseeked = () => {
+      try {
+        const k = Math.min(1, 400 / Math.max(v.videoWidth, v.videoHeight)), c = document.createElement('canvas');
+        c.width = Math.round(v.videoWidth * k); c.height = Math.round(v.videoHeight * k);
+        c.getContext('2d').drawImage(v, 0, 0, c.width, c.height);
+        c.toBlob(b => b ? out(b) : fallback(), 'image/jpeg', .7);
+      } catch (e) { fallback(); }
+    };
+    v.onerror = fallback;
+    v.src = url;
+  });
+}
+function openUp() { openSheet('up'); }
 async function upload() {
-  const files = [...$('#file').files], fi = $('#folder').value;
-  if (!files.length) return toast('Scegli almeno una foto 📷');
-  if (fi === '') return toast('Scegli prima la cartella 📁');
-  const btn = $('#send'); btn.disabled = true; let n = 0, ok = 0;
+  const files = [...$('#file').files];
+  if (!files.length) return toast('Scegli almeno una foto o un video 📷');
+  const fi = cur !== null ? cur : 0;
+  const btn = $('#send'); btn.disabled = true; let n = 0, ok = 0, big = 0;
   for (const f of files) {
     btn.textContent = `Carico ${++n} di ${files.length}…`;
     try {
       const id = crypto.randomUUID();
-      const [big, th] = await Promise.all([compress(f, 1600, .8), compress(f, 400, .7)]);
-      let r = await sb.storage.from('photos').upload(`${id}.jpg`, big, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
-      r = await sb.storage.from('photos').upload(`${id}_t.jpg`, th, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
-      r = await sb.from('photos').insert({ guest, caption: $('#caption').value.trim() || null, mission: CFG.cartelle[+fi].n, path: `${id}.jpg`, thumb: `${id}_t.jpg` });
+      let path, thumb, r;
+      if (f.type.startsWith('video/') || VID.test(f.name)) {
+        if (f.size > CFG.maxVideoMB * 1048576) { big++; continue; }
+        const ext = f.type === 'video/quicktime' ? 'mov' : f.type === 'video/webm' ? 'webm' : 'mp4';
+        path = `${id}.${ext}`; thumb = `${id}_t.jpg`;
+        const th = await videoThumb(f);
+        r = await sb.storage.from('photos').upload(path, f, { contentType: f.type || 'video/mp4' }); if (r.error) throw r.error;
+        r = await sb.storage.from('photos').upload(thumb, th, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
+      } else {
+        path = `${id}.jpg`; thumb = `${id}_t.jpg`;
+        const [bigImg, th] = await Promise.all([compress(f, 1600, .8), compress(f, 400, .7)]);
+        r = await sb.storage.from('photos').upload(path, bigImg, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
+        r = await sb.storage.from('photos').upload(thumb, th, { contentType: 'image/jpeg' }); if (r.error) throw r.error;
+      }
+      r = await sb.from('photos').insert({ guest, caption: $('#caption').value.trim() || null, mission: CFG.cartelle[fi].n, path, thumb });
       if (r.error) throw r.error; ok++;
     } catch (e) { console.error(e); }
   }
   btn.disabled = false; btn.textContent = 'Carica!';
-  $('#file').value = ''; $('#caption').value = ''; $('#filelbl').textContent = 'Scegli o scatta le foto';
-  if (ok) { closeSheets(); go('foto'); cur = +fi; }
-  toast(ok === files.length ? 'Foto caricate! Che bella gente 😎' : ok ? `Caricate ${ok} su ${files.length}. Riprova con le altre.` : 'Caricamento fallito 😬 Hai aperto il link dal QR code?');
+  $('#file').value = ''; $('#caption').value = ''; $('#filelbl').textContent = 'Scegli o scatta foto e video';
+  if (ok) { closeSheets(); go('foto'); cur = fi; }
+  const tooBig = big ? ` (${big} ${big === 1 ? 'video supera' : 'video superano'} i ${CFG.maxVideoMB} MB)` : '';
+  toast(ok === files.length ? 'Caricato! Che bella gente 😎' : ok ? `Caricati ${ok} su ${files.length}${tooBig}.` : big ? `Video troppo pesante, massimo ${CFG.maxVideoMB} MB 😬` : 'Caricamento fallito 😬 Hai aperto il link dal QR code?');
 }
 
 /* ---- Pensieri ---- */
@@ -369,4 +412,3 @@ go('home');
 </script>
 </body>
 </html>
-.
