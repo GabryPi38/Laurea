@@ -48,7 +48,8 @@ h2{font-size:1.7rem;margin-bottom:2px}h3{font-size:1.4rem;margin-bottom:4px}
 .ph{break-inside:avoid;margin-bottom:12px;position:relative;border:3px solid var(--k);border-radius:12px;box-shadow:3px 3px 0 var(--k);overflow:hidden;cursor:pointer;background:var(--y)}
 .ph img{width:100%;display:block;min-height:90px}
 .ph span{position:absolute;left:6px;bottom:6px;background:var(--g);border:2px solid var(--k);font-size:.75rem;font-weight:800;padding:1px 8px;border-radius:99px;max-width:calc(100% - 12px);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.ph.vid::after{content:"▶";position:absolute;right:6px;top:6px;width:30px;height:30px;border-radius:50%;background:var(--k);color:#fff;display:grid;place-items:center;font-size:.8rem;padding-left:2px}
+.ph.vid::after{content:"▶";position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:rgba(17,17,17,.8);border:3px solid #fff;color:#fff;display:grid;place-items:center;font-size:1.4rem;padding-left:4px;pointer-events:none}
+.ph em.tag{position:absolute;right:6px;top:6px;font-style:normal;background:var(--p);border:2px solid var(--k);border-radius:99px;font-family:Bangers,Impact,sans-serif;letter-spacing:.04em;font-size:.9rem;line-height:1.35;padding:0 9px}
 .empty{text-align:center;color:var(--mute);padding:30px 10px;font-weight:800}
 .empty b{display:block;font-size:2.6rem}
 #fab{position:fixed;right:14px;bottom:calc(20px + env(safe-area-inset-bottom));z-index:5;width:auto;display:none;background:var(--g)}
@@ -234,7 +235,7 @@ async function loadPhotos() {
   photos = data; renderPhotos();
 }
 const gridHtml = list => list.length
-  ? '<div class="grid">' + list.map(p => `<div class="ph${isVid(p) ? ' vid' : ''}" onclick="show('${p.id}')"><img loading="lazy" src="${pub(p.thumb)}" alt="${esc(p.caption || (isVid(p) ? 'Video di ' : 'Foto di ') + p.guest)}"><span>${esc(p.guest)}</span></div>`).join('') + '</div>'
+  ? '<div class="grid">' + list.map(p => `<div class="ph${isVid(p) ? ' vid' : ''}" onclick="show('${p.id}')"><img loading="lazy" src="${pub(p.thumb)}" alt="${esc(p.caption || (isVid(p) ? 'Video di ' : 'Foto di ') + p.guest)}">${isVid(p) ? '<em class="tag">VIDEO</em>' : ''}<span>${esc(p.guest)}</span></div>`).join('') + '</div>'
   : '<div class="empty"><b>🦗</b>Ancora nessuna foto. Rompi il ghiaccio!</div>';
 function renderPhotos() {
   const sera = photos.filter(p => p.mission === CFG.serata);
@@ -244,8 +245,8 @@ function renderPhotos() {
 }
 function show(id) {
   const p = photos.find(x => x.id === id), v = isVid(p);
-  const media = v ? `<video src="${pub(p.path)}" controls autoplay playsinline onclick="event.stopPropagation()"></video>` : `<img src="${pub(p.path)}" alt="">`;
-  $('#lb').innerHTML = `<div>${media}<b>${esc(p.guest)}</b>${p.caption ? '<p>' + esc(p.caption) + '</p>' : ''}<p style="opacity:.7;margin-top:8px">${v ? 'Tocca fuori dal video per chiudere' : 'Tocca per chiudere'}</p></div>`;
+  const media = v ? `<video src="${pub(p.path)}" poster="${pub(p.thumb)}" controls autoplay playsinline preload="metadata" onclick="event.stopPropagation()"></video>` : `<img src="${pub(p.path)}" alt="">`;
+  $('#lb').innerHTML = `<div>${media}<b>${esc(p.guest)}</b>${p.caption ? '<p>' + esc(p.caption) + '</p>' : ''}<p style="opacity:.7;margin-top:8px">${v ? 'Tocca fuori dal video per chiudere' : 'Tocca per chiudere'}</p>${v ? `<p style="margin-top:6px"><a href="${pub(p.path)}" target="_blank" rel="noopener" style="color:#fff" onclick="event.stopPropagation()">Se non parte, aprilo qui</a></p>` : ''}</div>`;
   openSheet('lb');
 }
 function showProof(path) {
